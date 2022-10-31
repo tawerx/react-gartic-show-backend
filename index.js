@@ -109,13 +109,15 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
+    console.log('user dissconected ' + socket.id);
     const users = config.get('users');
     const findItem = users.findIndex((obj) => obj.id == socket.id);
     users.splice(findItem, 1);
     config.set('users', users);
 
     checkRole();
-    checkDisconnect();
+    console.log(config.get('users').length);
+    //checkDisconnect();
     io.emit('getUsers', config.get('users'));
   });
 });
