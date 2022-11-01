@@ -74,17 +74,30 @@ const checkDisconnect = () => {
 
 io.on('connection', (socket) => {
   console.log('user connected ' + socket.id);
+  const users = config.get('users');
+  const user = {
+    id: socket.id,
+    nick: null,
+    role: config.get('users').length == 0 ? 'writer' : 'user',
+  };
+  users.push(user);
+  config.set('users', users);
+  console.log(config);
   socket.on('nickname', (nick) => {
-    const user = {
-      id: socket.id,
-      nick: nick,
-      role: config.get('users').length == 0 ? 'writer' : 'user',
-    };
+    // const user = {
+    //   id: socket.id,
+    //   nick: nick,
+    //   role: config.get('users').length == 0 ? 'writer' : 'user',
+    // };
     const users = config.get('users');
-    users.push(user);
+    const findItem = users.findIndex((obj) => obj.id == socket.id);
+    users[findItem].nick = nick;
+
+    // users.push(user);
     config.set('users', users);
-    socket.emit('role', user.role);
+    socket.emit('role', users[findItem].role);
     io.emit('getUsers', config.get('users'));
+    console.log(config);
   });
   socket.on('coor', (data) => {
     socket.broadcast.emit('paintCoord', data);
@@ -99,6 +112,7 @@ io.on('connection', (socket) => {
     checkGameWord(data.slice(data.indexOf(':') + 2), socket.id);
     socket.broadcast.emit('getMessage', data);
   });
+
   socket.on('setGameWord', (data) => {
     config.set('gameWord', data);
   });
@@ -117,8 +131,9 @@ io.on('connection', (socket) => {
 
     checkRole();
     console.log(config.get('users').length);
-    //checkDisconnect();
+    checkDisconnect();
     io.emit('getUsers', config.get('users'));
+    console.log(config);
   });
 });
 
