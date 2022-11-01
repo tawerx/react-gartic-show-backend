@@ -117,7 +117,7 @@ io.on('connection', (socket) => {
 
     checkRole();
     console.log(config.get('users').length);
-    //checkDisconnect();
+    checkDisconnect();
     io.emit('getUsers', config.get('users'));
   });
 });
