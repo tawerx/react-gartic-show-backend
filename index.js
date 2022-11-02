@@ -38,20 +38,23 @@ const checkRole = () => {
 const checkGameWord = (msg, userId) => {
   if (msg.toLowerCase() == config.get('gameWord').toLowerCase()) {
     const users = config.get('users');
+
     const findItem = users.findIndex((obj) => obj.role == 'writer');
-    users[findItem].role = 'user';
     const newWriter = users.findIndex((obj) => obj.id == userId);
-    users[newWriter].role = 'writer';
-    config.set('gameWord', '');
-    config.set('users', users);
-    io.to(userId).emit('role', users[newWriter].role);
-    io.to(users[findItem].id).emit('role', users[findItem].role);
-    io.emit('endGame', { nick: users[newWriter].nick, message: 'Отгадал загаданное слово' });
-    io.emit('clearCanvas');
-    config.set('gameWord', '');
-    config.set('canvasImage', '');
-    io.emit('getUsers', config.get('users'));
-    console.log(config);
+    if (findItem != newWriter) {
+      users[findItem].role = 'user';
+      users[newWriter].role = 'writer';
+      config.set('gameWord', '');
+      config.set('users', users);
+      io.to(userId).emit('role', users[newWriter].role);
+      io.to(users[findItem].id).emit('role', users[findItem].role);
+      io.emit('endGame', { nick: users[newWriter].nick, message: 'Отгадал загаданное слово' });
+      io.emit('clearCanvas');
+      config.set('gameWord', '');
+      config.set('canvasImage', '');
+      io.emit('getUsers', config.get('users'));
+      console.log(config);
+    }
   }
 };
 
