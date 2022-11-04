@@ -48,7 +48,8 @@ const checkGameWord = (msg, userId) => {
       config.set('users', users);
       io.to(userId).emit('role', users[newWriter].role);
       io.to(users[findItem].id).emit('role', users[findItem].role);
-      io.emit('endGame', { nick: users[newWriter].nick, message: 'Отгадал загаданное слово' });
+      const user = users[newWriter].nick;
+      io.emit('endGame', `${user}: отагадал загаданное слово`);
       io.emit('clearCanvas');
       config.set('gameWord', '');
       config.set('canvasImage', '');
@@ -123,6 +124,25 @@ io.on('connection', (socket) => {
   socket.on('canvasImg', (data) => {
     config.set('canvasImage', data);
     socket.broadcast.emit('canvasImg', data);
+  });
+
+  socket.on('afkWriter', () => {
+    const users = config.get('users');
+    const findItem = users.findIndex((obj) => obj.id == socket.id);
+    users[findItem].role = 'user';
+    io.to(socket.id).emit('role', users[findItem].role);
+
+    const randomNum = Math.floor(Math.random() * users.length);
+    users[randomNum].role = 'writer';
+    config.set('users', users);
+    io.to(users[randomNum].id).emit('role', users[randomNum].role);
+    const user = users[findItem].nick;
+    io.emit('endGame', `${user} бездействует`);
+    io.emit('clearCanvas');
+    config.set('gameWord', '');
+    config.set('canvasImage', '');
+    io.emit('getUsers', config.get('users'));
+    console.log(config);
   });
 
   socket.on('disconnect', () => {
