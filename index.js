@@ -5,12 +5,13 @@ const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server);
 const cors = require('cors');
-const path = require('path');
+// const path = require('path');
 
-app.use(express.static(path.join('../../client/react-gartic-show-frontend', 'build')));
+// app.use(express.static(path.join('../../client/react-gartic-show-frontend', 'build')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join('../../client/react-gartic-show-frontend', 'build', 'index.html'));
+  res.json('Sever works');
+  //res.sendFile(path.join('../../client/react-gartic-show-frontend', 'build', 'index.html'));
 });
 app.use(express.json());
 app.use(cors());
