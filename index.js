@@ -7,10 +7,10 @@ const io = new Server(server);
 const cors = require('cors');
 const path = require('path');
 
-app.use(express.static(path.join('../../client/react-gartic-show-frontend', 'build')));
+app.use(express.static(path.join('../gartic-show-client', 'build')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join('../../client/react-gartic-show-frontend', 'build', 'index.html'));
+  res.sendFile(path.join('../gartic-show-client', 'build', 'index.html'));
 });
 app.use(express.json());
 app.use(cors());
@@ -165,6 +165,6 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(process.env.PORT || 3005, () => {
+server.listen(process.env.PORT || 5000, () => {
   console.log('server started');
 });
